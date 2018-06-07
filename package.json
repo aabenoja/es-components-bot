@@ -13,6 +13,7 @@
     "test:watch": "jest --watch --notify --notifyMode=change --coverage"
   },
   "dependencies": {
+    "parse-diff": "^0.4.2",
     "probot": "^6.0.0"
   },
   "devDependencies": {
