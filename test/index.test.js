@@ -1,16 +1,18 @@
 jest.mock('request-promise-native')
 
 const { createRobot } = require('probot')
-const app = require('../index')
+const app = require('../src')
 const synchronized = require('./fixtures/synchronized')
+const { paths } = require('../src/constants')
 
 const mockedRequest = require('request-promise-native')
 
 let robot, github, files, lernaVersion
+const expectedVersion = '13.1.1'
 
 mockedRequest.mockImplementation(url => {
-  let version = '13.1.1'
-  if (url === 'lerna.json') { version = lernaVersion }
+  let version = expectedVersion
+  if (url === paths.lerna) { version = lernaVersion }
   return Promise.resolve({ version })
 })
 
@@ -47,6 +49,17 @@ test('updates the github check with the updated status', async () => {
 })
 
 describe('check status', () => {
+  const correctedPaths = [{
+    filename: paths.lerna,
+    raw_url: paths.lerna
+  }, {
+    filename: paths.components,
+    raw_url: paths.components
+  }, {
+    filename: paths.theme,
+    raw_url: paths.theme
+  }]
+
   test('fails when not all files are updates', async () => {
     await robot.receive(synchronized)
     const updateArgs = github.checks.update.mock.calls[0][0]
@@ -54,16 +67,7 @@ describe('check status', () => {
   })
 
   test('fails when some or all json files are not bumped', async () => {
-    files = [{
-      filename: 'lerna.json',
-      raw_url: 'lerna.json'
-    }, {
-      filename: 'packages/es-components/package.json',
-      raw_url: 'packages/es-components/package.json'
-    }, {
-      filename: 'packages/es-components-via-theme/package.json',
-      raw_url: 'packages/es-components-via-theme/package.json'
-    }]
+    files = correctedPaths
 
     await robot.receive(synchronized)
     const updateArgs = github.checks.update.mock.calls[0][0]
@@ -71,18 +75,8 @@ describe('check status', () => {
   })
 
   test('succeeds when some or all json files are not bumped', async () => {
-    files = [{
-      filename: 'lerna.json',
-      raw_url: 'lerna.json'
-    }, {
-      filename: 'packages/es-components/package.json',
-      raw_url: 'packages/es-components/package.json'
-    }, {
-      filename: 'packages/es-components-via-theme/package.json',
-      raw_url: 'packages/es-components-via-theme/package.json'
-    }]
-
-    lernaVersion = '13.1.1'
+    files = correctedPaths
+    lernaVersion = expectedVersion
 
     await robot.receive(synchronized)
     const updateArgs = github.checks.update.mock.calls[0][0]
