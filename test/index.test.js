@@ -11,6 +11,10 @@ let robot, github, files, lernaVersion
 const expectedVersion = '13.1.1'
 
 mockedRequest.mockImplementation(url => {
+  if (url === 'https://api.github.com/repos/aabenoja/es-components/contents/packages?ref=sr-only') {
+    return [ 1, 2 ]
+  }
+
   let version = expectedVersion
   if (url === paths.lerna) { version = lernaVersion }
   return Promise.resolve({ version })
