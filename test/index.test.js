@@ -14,6 +14,9 @@ mockedRequest.mockImplementation(url => {
   if (url === 'https://api.github.com/repos/aabenoja/es-components/contents/packages?ref=sr-only') {
     return [ 1, 2 ]
   }
+  if (url === 'https://api.github.com/repos/WTW-IM/es-components/contents/packages?ref=master') {
+    return [ 1, 2 ]
+  }
 
   let version = expectedVersion
   if (url === paths.lerna) { version = lernaVersion }
