@@ -5,7 +5,13 @@ async function countInRepo (target) {
   const template = target.repo.contents_url
   const contentsUrl = `${template.replace('{+path}', 'packages')}?ref=${branch}`
 
-  const contents = await request(contentsUrl, {json: true})
+  const requestOptions = {
+    json: true,
+    headers: {
+      'User-Agent': 'es-components-bot'
+    }
+  }
+  const contents = await request(contentsUrl, requestOptions)
 
   return contents.length
 }
