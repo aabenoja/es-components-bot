@@ -10,6 +10,7 @@ function updateCheck (context, runId, correctionSummary) {
     name: checkName,
     check_run_id: runId,
     status: 'completed',
+    started_at: context.toISOString(),
     conclusion,
     completed_at: new Date().toISOString(),
     output: {
